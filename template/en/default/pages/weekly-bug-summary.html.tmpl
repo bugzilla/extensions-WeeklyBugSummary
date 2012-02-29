@@ -1,0 +1,163 @@
+[%# 1.0@bugzilla.org %]
+[%# -*- mode: html -*- %]
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Olav Vitters
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Olav Vitters Corporation. All
+  # Rights Reserved.
+  #
+  #%]
+
+[%# INTERFACE:
+  # This template has no interface.
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% title = "Weekly $terms.Bug Summary" %]
+[% PROCESS global/header.html.tmpl
+    h1 = "" %]
+
+<p>Some [% terms.bug %] summary info from bugzilla.gnome.org
+   [% IF classification %]
+     for products in the [% classification FILTER html %] classification
+   [% END %]
+   [% IF product %] for [% product FILTER html %][% END %]
+   [% %], covering the last [% days FILTER html %] days.</p>
+
+
+  Total Reports: [% totalbugs FILTER html %] 
+  [% IF links == "yes" %]
+    (<a href="[% openbuglist FILTER html %]">[% openbugs FILTER html %]</a>
+  [% ELSE %]
+    ([% openbugs FILTER html %]
+  [% END %]
+  reports opened and 
+  
+  [% IF links == "yes" %]
+    <a href="[% closedbuglist FILTER html %]">[% closedbugs FILTER html %]</a>
+  [% ELSE %]
+    [% closedbugs FILTER html %]
+  [% END %]
+  reports closed. Including enhancement requests)
+
+[% IF products > 0 %]
+<h2>Top [% products FILTER html %] Gnome modules</h2>
+
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><th>Product</th><th>Open [% terms.bugs %]</th><th>Opened in last [% days FILTER html %] days</th><th>Closed in last [% days FILTER html %] days</th><th>Change</th></tr>
+[% FOREACH row = productlist %]
+<tr class="[%+ IF loop.count() % 2 == 0 %]bz_row_even[% ELSE %]bz_row_odd[% END %]">
+  <td><a href="browse.cgi?product=[% row.1 FILTER uri %]">[% row.1 FILTER html %]</a></td>
+  <td><a href="buglist.cgi?product=[% row.1 FILTER uri %]&amp;bug_status=UNCONFIRMED&amp;bug_status=NEW&amp;bug_status=ASSIGNED&amp;bug_status=REOPENED&amp;bug_severity=blocker&amp;bug_severity=critical&amp;bug_severity=major&amp;bug_severity=normal&amp;bug_severity=minor&amp;bug_severity=trivial&amp;gnome_version=[% version FILTER uri %]">[% row.2 FILTER html %]</a></td>
+  <td><a href="[% row.4 FILTER html %]">+[% row.3 FILTER html %]</a></td>
+  <td><a href="[% row.6 FILTER html %]">-[% row.5 FILTER html %]</a></td>
+  [% IF row.7 > 0 %]
+    <td bgcolor="#ffc849">[% row.7 FILTER html %]</td>
+  [% ELSE %]
+    <td bgcolor="#00d51d">[% row.7 FILTER html %]</td>
+  [% END %]
+</tr>
+[% END %]
+</table>
+[% END %]
+
+
+[% IF hunters > 0 %]
+<h2>Top [% hunters FILTER html %] [%+ terms.bug %] closers</h2>
+
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><th>Position</th><th>Who</th><th>Number of [% terms.bugs %] closed</th></tr>
+[% position = 1 %]
+[% FOREACH row = hunterlist %]
+<tr class="[%+ IF loop.count() % 2 == 0 %]bz_row_even[% ELSE %]bz_row_odd[% END %]">
+  <td>[% position FILTER html %]</td>
+  <td>
+    [% INCLUDE global/user.html.tmpl who = row.2 %]
+  </td>
+  [% IF links == "yes" %]
+    <td><a href="[% row.3 FILTER html %]">[% row.1 FILTER html %]</a></td>
+  [% ELSE %]
+    <td>[% row.1 FILTER html %]</td>
+  [% END %]
+</tr>
+[% position = position + 1 %]
+[% END %]
+</table>
+[% END %]
+
+[% IF reporters > 0 %]
+<h2>Top [% reporters FILTER html %] [%+ terms.bug %] reporters</h2>
+
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><th>Position</th><th>Who</th><th>Number of [% terms.bugs %] reported</th></tr>
+[% position = 1 %]
+[% FOREACH row = reporterlist %]
+<tr class="[%+ IF loop.count() % 2 == 0 %]bz_row_even[% ELSE %]bz_row_odd[% END %]">
+  <td>[% position FILTER html %]</td>
+  <td>
+    [% INCLUDE global/user.html.tmpl who = row.2 %]
+  </td>
+  [% IF links == "yes" %]
+    <td><a href="[% row.3 FILTER html %]">[% row.1 FILTER html %]</a></td>
+  [% ELSE %]
+    <td>[% row.1 FILTER html %]</td>
+  [% END %]
+</tr>
+[% position = position + 1 %]
+[% END %]
+</table>
+[% END %]
+
+[% IF patchers > 0 %]
+<h2>Top [% patchers FILTER html %] patch contributors</h2>
+
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><th>Position</th><th>Who</th><th>Number of patches contributed</th></tr>
+[% position = 1 %]
+[% FOREACH row = patcherlist %]
+<tr class="[%+ IF loop.count() % 2 == 0 %]bz_row_even[% ELSE %]bz_row_odd[% END %]">
+  <td>[% position FILTER html %]</td>
+  <td>
+    [% INCLUDE global/user.html.tmpl who = row.2 %]
+  </td>
+    <td>[% row.1 FILTER html %]</td>
+</tr>
+[% position = position + 1 %]
+[% END %]
+</table>
+[% END %]
+
+[% IF reviewers > 0 %]
+<h2>Top [% reviewers FILTER html %] patch reviewers</h2>
+
+<table border=1 cellspacing=0 cellpadding=5>
+<tr><th>Position</th><th>Who</th><th>Number of patches reviewed</th></tr>
+[% position = 1 %]
+[% FOREACH row = reviewerlist %]
+<tr class="[%+ IF loop.count() % 2 == 0 %]bz_row_even[% ELSE %]bz_row_odd[% END %]">
+  <td>[% position FILTER html %]</td>
+  <td>
+    [% INCLUDE global/user.html.tmpl who = row.2 %]
+  </td>
+    <td>[% row.1 FILTER html %]</td>
+</tr>
+[% position = position + 1 %]
+[% END %]
+</table>
+[% END %]
+
+<p> If you spot any errors in this page please report it to <a href="mailto:bugmaster@gnome.org">bugmaster@gnome.org</a>. Thanks.</p>
+
+[% PROCESS global/footer.html.tmpl %]
